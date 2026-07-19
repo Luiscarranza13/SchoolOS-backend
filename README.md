@@ -1,122 +1,124 @@
+<div align="center">
+
+<img src="docs/assets/novaschool-backend-hero.png" alt="NovaSchool OS Backend" width="100%" />
+
 # NovaSchool OS Backend
 
-API de gestión escolar construida con Node.js, Express, TypeScript, MongoDB y Mongoose. Incluye autenticación JWT con rotación de refresh tokens, sesiones persistidas, autorización administrativa y módulos escolares.
+### El núcleo seguro, moderno y escalable para la gestión escolar
 
-Proyecto basado en SchoolOS Backend, creado originalmente por Hamid Karimi y distribuido bajo licencia MIT.
+API REST construida con **Node.js**, **Express**, **TypeScript** y **MongoDB**.
+Reúne autenticación robusta, administración académica y módulos operativos
+en una base preparada para desarrollo local y producción.
 
-## Tecnologías
+<p>
+  <a href="#-inicio-rápido">Inicio rápido</a> •
+  <a href="#-arquitectura">Arquitectura</a> •
+  <a href="#-módulos-de-la-api">API</a> •
+  <a href="#-seguridad">Seguridad</a> •
+  <a href="#-contribuir">Contribuir</a>
+</p>
 
-- Node.js 22
-- Express 5
-- TypeScript en modo estricto
-- MongoDB y Mongoose
-- JWT de acceso y renovación
-- Cookies HTTP-only
-- Zod
-- Helmet, CORS, rate limiting y Morgan
-- bcryptjs
+![Node.js 22](https://img.shields.io/badge/Node.js-22-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![TypeScript 5.9](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Express 5](https://img.shields.io/badge/Express-5-111827?style=for-the-badge&logo=express&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Ready-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-6%2F6_passed-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)
+![MIT License](https://img.shields.io/badge/license-MIT-8B5CF6?style=for-the-badge)
 
-## Requisitos
+</div>
 
-- Node.js 22 o compatible. El archivo `.nvmrc` fija la versión recomendada.
-- npm
-- MongoDB local, Docker o una URI privada de MongoDB Atlas
+> [!IMPORTANT]
+> Este fork moderniza SchoolOS Backend con validación estricta del entorno,
+> sesiones reforzadas, mejor experiencia local, pruebas y documentación.
+> La autoría y la licencia MIT del proyecto original se conservan.
 
-Comprobación:
+## ✨ Lo más destacado
 
-```bash
-node --version
-npm --version
+| Área | Incluye |
+|---|---|
+| 🔐 Autenticación | Access token, refresh token rotativo, cookies HTTP-only y cierre de sesiones |
+| 🛡️ Seguridad | Helmet, CORS estricto, rate limiting, bcrypt, Zod y errores seguros |
+| 🏫 Gestión escolar | Estudiantes, docentes, clases, horarios, asistencia, exámenes y notas |
+| 💼 Operaciones | Pagos, anuncios, mensajería, biblioteca y recursos humanos |
+| ⚙️ Desarrollo | TypeScript estricto, ESLint, Docker Compose, seeder y pruebas automatizadas |
+| 🚀 Operación | Validación de variables, health check y apagado controlado de HTTP/MongoDB |
+
+## 🧭 Arquitectura
+
+```mermaid
+flowchart LR
+    UI["Frontend Angular"] -->|"HTTPS + JSON"| API["Express API"]
+    API --> SEC["Helmet · CORS · Rate limit"]
+    SEC --> AUTH["JWT + sesiones"]
+    AUTH --> SCOPE["Roles y alcance escolar"]
+    SCOPE --> MOD["Módulos académicos"]
+    MOD --> DB[("MongoDB")]
+    AUTH --> DB
 ```
 
-## Instalación
+La API espera la conexión con MongoDB antes de abrir el puerto HTTP. Al recibir
+`SIGINT` o `SIGTERM`, cierra el servidor y la conexión de Mongoose de forma
+ordenada.
 
-Desde `novaschool-os/backend`:
+## 🚀 Inicio rápido
+
+### Requisitos
+
+- Node.js 22 o una versión compatible
+- npm
+- MongoDB local, MongoDB Atlas o Docker
+
+### 1. Instalar
 
 ```bash
+git clone https://github.com/Luiscarranza13/SchoolOS-backend.git
+cd SchoolOS-backend
 npm ci
 ```
 
-Se usa npm porque el proyecto incluye `package-lock.json`.
+### 2. Configurar
 
-## Variables de entorno
-
-Crear el entorno local desde el ejemplo:
+Linux/macOS:
 
 ```bash
 cp .env.example .env
 ```
 
-En PowerShell:
+PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-Variables:
-
-| Variable | Uso |
-|---|---|
-| `PORT` | Puerto HTTP; localmente `5000` |
-| `NODE_ENV` | `development`, `test` o `production` |
-| `MONGO_URI` | URI local o privada de Atlas |
-| `JWT_ACCESS_SECRET` | Secreto independiente de al menos 32 caracteres |
-| `JWT_REFRESH_SECRET` | Secreto independiente de al menos 32 caracteres |
-| `JWT_ACCESS_EXPIRES_IN` | Duración del access token, por ejemplo `15m` |
-| `JWT_REFRESH_EXPIRES_IN` | Duración de refresh y sesión, por ejemplo `7d` |
-| `CLIENT_URL` | Único origen permitido por CORS |
-| `COOKIE_SAME_SITE` | `lax`, `strict` o `none` |
-| `COOKIE_SECURE` | `false` en HTTP local; `true` en producción HTTPS |
-| `COOKIE_DOMAIN` | Dominio opcional de la cookie |
-
-No versionar `.env`. `.env.example` contiene únicamente referencias reemplazables.
-
-Para generar secretos de producción:
+Genera dos secretos independientes para JWT:
 
 ```bash
 node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
 ```
 
-Generar un valor diferente para cada secreto.
+Completa los valores en `.env`. Nunca publiques ese archivo.
 
-## MongoDB local
+### 3. Iniciar MongoDB
 
-### Instalación existente
-
-Iniciar el servicio de MongoDB y usar:
+Con una instalación local:
 
 ```dotenv
 MONGO_URI=mongodb://127.0.0.1:27017/novaschool_os
 ```
 
-### Docker Compose
-
-El compose de desarrollo levanta solamente MongoDB:
+O con Docker:
 
 ```bash
 docker compose -f docker-compose.dev.yml up -d
-docker compose -f docker-compose.dev.yml ps
 ```
 
-Para detenerlo sin borrar el volumen:
-
-```bash
-docker compose -f docker-compose.dev.yml down
-```
-
-### MongoDB Atlas
-
-Reemplazar `MONGO_URI` en el `.env` local con la URI privada. No copiar la URI a `.env.example`, documentación, commits o capturas.
-
-El servidor espera la conexión a MongoDB antes de aceptar solicitudes. En `SIGINT` o `SIGTERM` cierra el servidor HTTP y la conexión de Mongoose.
-
-## Desarrollo
+### 4. Ejecutar
 
 ```bash
 npm run dev
 ```
 
-API local:
+La API estará disponible en:
 
 ```text
 http://localhost:5000/api
@@ -124,61 +126,90 @@ http://localhost:5000/api
 
 Health check:
 
-```text
-GET http://localhost:5000/api/health
+```http
+GET /api/health
 ```
 
-Respuesta:
+## 🔧 Variables principales
 
-```json
-{
-  "success": true,
-  "message": "NovaSchool OS API is running",
-  "environment": "development",
-  "timestamp": "..."
-}
+| Variable | Descripción | Ejemplo local |
+|---|---|---|
+| `PORT` | Puerto del servidor | `5000` |
+| `NODE_ENV` | Entorno de ejecución | `development` |
+| `MONGO_URI` | Conexión a MongoDB | `mongodb://127.0.0.1:27017/novaschool_os` |
+| `JWT_ACCESS_SECRET` | Secreto del access token, mínimo 32 caracteres | valor aleatorio |
+| `JWT_REFRESH_SECRET` | Secreto del refresh token, mínimo 32 caracteres | valor aleatorio distinto |
+| `JWT_ACCESS_EXPIRES_IN` | Duración del access token | `15m` |
+| `JWT_REFRESH_EXPIRES_IN` | Duración de la sesión | `7d` |
+| `CLIENT_URL` | Origen permitido por CORS | `http://127.0.0.1:4200` |
+| `COOKIE_SAME_SITE` | Política SameSite | `lax` |
+| `COOKIE_SECURE` | Cookies solo por HTTPS | `false` en local |
+
+Consulta [`.env.example`](.env.example) para ver la configuración completa.
+
+## 🧩 Módulos de la API
+
+Todas las rutas parten de `/api`.
+
+| Módulo | Ruta base | Capacidades |
+|---|---|---|
+| Usuarios | `/users` | Registro, perfil y administración de cuentas |
+| Sesiones | `/sessions`, `/token`, `/logout` | Login, renovación y cierre de sesión |
+| Estudiantes | `/students` | Altas, consultas, edición y eliminación |
+| Docentes | `/teachers` | Gestión del personal docente |
+| Clases | `/classes` | Clases y asignación de estudiantes |
+| Horarios | `/timetables` | Planificación académica |
+| Asistencia | `/attendance` | Registros individuales, masivos y resúmenes |
+| Evaluación | `/exams`, `/grades` | Exámenes, calificaciones y resúmenes |
+| Finanzas | `/fees` | Cuotas, pagos y estado por estudiante |
+| Comunicación | `/announcements`, `/messages` | Anuncios y mensajería |
+| Biblioteca | `/library` | Libros, préstamos y devoluciones |
+| RR. HH. | `/hr` | Personal y resumen operativo |
+| Administración | `/admin` | Dashboard protegido por rol |
+
+## 🔐 Flujo de autenticación
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant A as API
+    participant D as MongoDB
+
+    C->>A: POST /api/sessions
+    A->>D: Verificar cuenta
+    D-->>A: Usuario y estado
+    A-->>C: Access token + cookie HTTP-only
+    C->>A: Solicitud con Bearer token
+    A-->>C: Recurso autorizado
+    C->>A: POST /api/token
+    A->>D: Validar y rotar sesión
+    A-->>C: Nuevo access token + nueva cookie
 ```
 
-## Typecheck, build y pruebas
+El frontend debe usar `withCredentials: true` en registro, login, refresh y
+logout; mantener el access token en memoria; y enviarlo como
+`Authorization: Bearer <token>`.
 
-```bash
-npm run typecheck
-npm run build
-npm test
-```
+## 🛡️ Seguridad
 
-El build se genera en `dist/`. Las pruebas usan el runner nativo de Node y verifican health, CORS, validación y errores JSON sin depender de MongoDB.
+- Cookies de refresh HTTP-only con opciones centralizadas.
+- Rotación de refresh tokens y almacenamiento exclusivo de su hash SHA-256.
+- JWT con `issuer`, `audience`, expiración y `tokenVersion`.
+- Rechazo de cuentas bloqueadas o inactivas.
+- bcrypt con coste 12.
+- Validación Zod para cuerpos de solicitud.
+- Helmet, CORS con origen único y límites por IP.
+- Errores de producción sin stack trace.
+- Respuestas `400` para identificadores inválidos y `409` para conflictos únicos.
+- Mutaciones académicas restringidas a administradores.
 
-ESLint está configurado para TypeScript, pruebas y archivos de configuración:
+> [!WARNING]
+> En producción usa HTTPS, secretos aleatorios, `NODE_ENV=production`,
+> `COOKIE_SECURE=true` y una URI privada de MongoDB.
 
-```bash
-npm run lint
-```
+## 👤 Administrador inicial
 
-## Producción
-
-```bash
-npm run build
-npm start
-```
-
-Antes de producción:
-
-- usar secretos aleatorios e independientes;
-- configurar una URI privada de MongoDB;
-- servir la API mediante HTTPS;
-- establecer `NODE_ENV=production`;
-- establecer `COOKIE_SECURE=true`;
-- configurar exactamente el origen del frontend en `CLIENT_URL`;
-- revisar proxy, logs, backups y límites según la infraestructura.
-
-`COOKIE_SAME_SITE=none` solo se acepta junto con `COOKIE_SECURE=true`.
-
-## Administrador inicial
-
-El repositorio original requería cambiar el rol manualmente en MongoDB. Ahora existe un seeder seguro que crea o promueve por correo y utiliza el hook real de bcrypt del modelo.
-
-Definir solo en `.env`:
+Define estas variables únicamente en tu `.env`:
 
 ```dotenv
 ADMIN_NAME=Nova School
@@ -187,149 +218,81 @@ ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=replace-with-a-strong-password
 ```
 
-Ejecutar:
+Luego ejecuta:
 
 ```bash
 npm run seed:admin
 ```
 
-Reglas:
+El seeder no duplica usuarios: crea la cuenta o promueve por correo una cuenta
+existente, utilizando el mismo hash bcrypt del modelo.
 
-- no contiene credenciales fijas;
-- exige nombre y apellido;
-- exige contraseña de al menos 12 caracteres;
-- no duplica usuarios por correo;
-- si el usuario ya existe, lo promueve a `admin` sin sustituir su contraseña;
-- si crea un usuario, la contraseña se hashea con el middleware del modelo.
+## 🧪 Calidad y comandos
 
-## Autenticación para Angular
+| Comando | Acción |
+|---|---|
+| `npm run dev` | Desarrollo con recarga automática |
+| `npm run typecheck` | Verificación estática sin emitir archivos |
+| `npm run lint` | Reglas ESLint para TypeScript y pruebas |
+| `npm run build` | Compilación a `dist/` |
+| `npm test` | Build y suite de pruebas |
+| `npm run seed:admin` | Crea o promueve al administrador inicial |
+| `npm start` | Ejecuta el build de producción |
 
-- Registro: `POST /api/users`
-- Login: `POST /api/sessions`
-- Perfil: `GET /api/users/me`
-- Refresh: `POST /api/token`
-- Logout: `POST /api/logout`
-
-Registro y login devuelven `data.accessToken` en JSON y establecen `refreshToken` en una cookie HTTP-only. Angular debe:
-
-- usar `withCredentials: true` para registro, login, refresh y logout;
-- mantener el access token en memoria;
-- enviarlo como `Authorization: Bearer <token>`;
-- intentar un refresh controlado ante `401`;
-- limpiar la sesión si refresh responde `401` o `403`;
-- no intentar refresh repetidamente ante un `403` de permisos.
-
-En desarrollo local, la cookie usa `sameSite=lax`, `secure=false` y `path=/api`. CORS permite únicamente el valor de `CLIENT_URL`, que por defecto es `http://127.0.0.1:4200`.
-
-La guía completa está en [`../docs/BACKEND_API_GUIDE.md`](../docs/BACKEND_API_GUIDE.md).
-
-## Roles y alcance escolar
-
-El modelo de autenticación tiene dos roles:
-
-- `admin`: lectura y escritura total.
-- `user`: cuenta estándar.
-
-Docente y estudiante son perfiles vinculados, no roles. Un `user` vinculado a `Teacher` o `Student` obtiene alcance de lectura sobre los datos escolares autorizados. Las mutaciones de registros escolares requieren `admin`.
-
-## Módulos
-
-- autenticación, usuarios, sesiones y administración;
-- estudiantes y docentes;
-- clases y horarios;
-- asistencia;
-- exámenes y calificaciones;
-- pagos;
-- anuncios;
-- mensajería;
-- biblioteca;
-- recursos humanos.
-
-## Estructura
+## 🗂️ Estructura
 
 ```text
-backend/
-├── src/
-│   ├── config/
-│   ├── controllers/
-│   ├── middlewares/
-│   ├── models/
-│   ├── routes/
-│   ├── scripts/
-│   ├── services/
-│   ├── types/
-│   ├── utils/
-│   ├── validators/
-│   ├── app.ts
-│   └── server.ts
-├── tests/
-├── scripts/
-├── docker-compose.dev.yml
-├── package.json
-├── tsconfig.json
-└── .env.example
+SchoolOS-backend/
+|-- docs/assets/       # Recursos visuales del README
+|-- scripts/           # Migraciones
+|-- src/
+|   |-- config/        # Entorno, cookies y base de datos
+|   |-- controllers/   # Capa HTTP
+|   |-- middlewares/   # Seguridad, roles y validación
+|   |-- models/        # Modelos Mongoose
+|   |-- routes/        # Endpoints REST
+|   |-- scripts/       # Seeders
+|   |-- services/      # Reglas de negocio
+|   |-- utils/         # JWT, acceso y errores
+|   `-- validators/    # Esquemas Zod
+|-- tests/             # Pruebas de la aplicación
+|-- docker-compose.dev.yml
+|-- package.json
+`-- tsconfig.json
 ```
 
-## Colección de API
+## 🤝 Contribuir
 
-Importar en Postman:
+Las propuestas son bienvenidas. Antes de enviar cambios:
 
-- `../docs/api/SchoolOS.postman_collection.json`
-- `../docs/api/SchoolOS.postman_environment.json`
-
-Seleccionar el entorno local, completar las variables de cuenta y usar primero login. Postman conserva la cookie de refresh en su cookie jar y los scripts de la colección actualizan `accessToken`.
-
-## Problemas frecuentes
-
-### El servidor no inicia
-
-Si aparece `Database connection failed`, comprobar que MongoDB esté activo y que `MONGO_URI` sea válida. El backend no escucha el puerto hasta conectar a la base.
-
-### Variables inválidas
-
-El inicio falla de forma explícita si falta una variable obligatoria, el puerto es inválido, los secretos tienen menos de 32 caracteres o la combinación de cookies es insegura.
-
-### Angular recibe un error CORS
-
-Comprobar que `CLIENT_URL` coincida exactamente con el origin del navegador, sin una barra final:
-
-```dotenv
-CLIENT_URL=http://127.0.0.1:4200
+```bash
+npm run typecheck
+npm run lint
+npm test
 ```
 
-### El refresh no envía cookie
+Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para conocer el flujo recomendado.
 
-Usar `withCredentials: true`. En HTTP local, mantener `COOKIE_SECURE=false`. En producción, usar HTTPS y `COOKIE_SECURE=true`.
+## 📜 Licencia y agradecimiento
 
-### Un usuario autenticado recibe 403 en datos escolares
+Distribuido bajo la [licencia MIT](LICENSE).
 
-El usuario debe ser `admin` o estar vinculado por `userId` a un documento `Teacher` o `Student`. Autenticación válida no equivale a alcance escolar.
+Este trabajo parte de
+[SchoolOS Backend](https://github.com/hamidukarimi/SchoolOS-backend), creado y
+publicado como software de código abierto por
+[Hamid Karimi](https://github.com/hamidukarimi).
 
-## Seguridad
+Gracias a Hamid por construir la base original. Esta evolución se publica con
+respeto por su autoría y con la intención de aportar mejoras a la comunidad.
 
-- Helmet en todas las respuestas.
-- CORS con origen único configurable y credenciales.
-- Rate limit en registro, login y refresh.
-- Validación Zod de bodies.
-- bcrypt con coste 12.
-- JWT con issuer, audience, expiración y `tokenVersion`.
-- Refresh tokens almacenados únicamente como hash SHA-256.
-- Rotación de refresh token.
-- Rechazo de cuentas bloqueadas o inactivas.
-- Errores de producción sin stack trace.
-- Traducción a `400` de IDs inválidos y validación Mongoose.
-- Conflictos únicos traducidos a `409`.
+---
 
-## Licencia y atribución
+<div align="center">
 
-Se conserva el archivo [`LICENSE`](LICENSE) y la licencia MIT original.
+Hecho con TypeScript, una API clara y mucho cariño por la educación.
 
-Proyecto basado en SchoolOS Backend, creado originalmente por Hamid Karimi y distribuido bajo licencia MIT.
+[⭐ Marca el proyecto con una estrella](https://github.com/Luiscarranza13/SchoolOS-backend) ·
+[🐛 Reporta un problema](https://github.com/Luiscarranza13/SchoolOS-backend/issues) ·
+[🤝 Propón una mejora](https://github.com/Luiscarranza13/SchoolOS-backend/pulls)
 
-## Agradecimiento al autor original
-
-Gracias a [Hamid Karimi](https://github.com/hamidukarimi) por crear y publicar
-SchoolOS Backend como software de código abierto. Su trabajo proporcionó la
-base sobre la que se desarrollaron estas mejoras de seguridad, calidad y
-operación. Esta contribución se ofrece con respeto por su autoría y con el
-propósito de devolver valor a la comunidad que hizo posible el proyecto.
+</div>
