@@ -44,6 +44,15 @@ if (env.nodeEnv === "development") {
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 
+app.get("/api/health", (_req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: "NovaSchool OS API is running",
+    environment: env.nodeEnv,
+    timestamp: new Date().toISOString(),
+  });
+});
+
 if (env.nodeEnv === "production") {
   app.use(async (_req, _res, next) => {
     try {
@@ -54,15 +63,6 @@ if (env.nodeEnv === "production") {
     }
   });
 }
-
-app.get("/api/health", (_req: Request, res: Response) => {
-  res.status(200).json({
-    success: true,
-    message: "NovaSchool OS API is running",
-    environment: env.nodeEnv,
-    timestamp: new Date().toISOString(),
-  });
-});
 
 app.use("/api", routes);
 
