@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import routes from "./routes/index.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
 import env from "./config/env.js";
+import connectDB from "./config/db.js";
 import ApiError from "./utils/ApiError.js";
 
 const app: Application = express();
@@ -41,6 +42,17 @@ if (env.nodeEnv === "development") {
 }
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
+
+if (env.nodeEnv === "production") {
+  app.use(async (_req, _res, next) => {
+    try {
+      await connectDB();
+      next();
+    } catch (error) {
+      next(error);
+    }
+  });
+}
 
 app.get("/api/health", (_req: Request, res: Response) => {
   res.status(200).json({
