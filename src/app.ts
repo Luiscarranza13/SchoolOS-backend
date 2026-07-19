@@ -1,7 +1,7 @@
 import express from "express";
-import type { Application, Request, Response } from "express";
+import type { Application, Request, RequestHandler, Response } from "express";
 import cors from "cors";
-import helmet from "helmet";
+import helmetModule from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import routes from "./routes/index.js";
@@ -11,6 +11,7 @@ import connectDB from "./config/db.js";
 import ApiError from "./utils/ApiError.js";
 
 const app: Application = express();
+const helmet = helmetModule as unknown as () => RequestHandler;
 
 // ─── Global Middlewares ───────────────────────────────────────────────────────
 
